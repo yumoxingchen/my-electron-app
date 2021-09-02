@@ -1,6 +1,8 @@
-# Electron快速入门
+# Electron学习
 
-## 1、创建项目文件夹并进入
+## Electron快速入门
+
+### 1、创建项目文件夹并进入
 
 ```bash
 mkdir my-electron-app
@@ -8,7 +10,7 @@ cd my-electron-app
 npm init
 ```
 
-## 2、初始化
+### 2、初始化
 
 ```bash
 npm init
@@ -35,13 +37,13 @@ npm init
 
 ```
 
-## 3、安装Electron
+### 3、安装Electron
 
 ```bash
 npm install --save-dev electron
 ```
 
-## 4、创建主页面index.html
+### 4、创建主页面index.html
 
 ```html5
 <!DOCTYPE html>
@@ -62,7 +64,7 @@ npm install --save-dev electron
 </html>
 ```
 
-## 5、main.js创建一个窗口并在窗口中打开页面
+### 5、main.js创建一个窗口并在窗口中打开页面
 
 ```js
 // 从electron中引入
@@ -96,7 +98,7 @@ app.on("window-all-closed",()=>{
 })
 ```
 
-## 6、使用proload.js实现一些操作
+### 6、使用proload.js实现一些操作
 
 ```js
 window.addEventListener("DOMContentLoaded",()=>{
@@ -113,7 +115,82 @@ window.addEventListener("DOMContentLoaded",()=>{
 })
 ```
 
-## 7、运行结果
+### 7、运行结果
 
 ![image-20210831161514807](https://ola.yumoxingchen.cn/%E5%9B%BE%E5%BA%8A/image-20210831161514807.png?hash=y0aqBl4W&download=1)
+
+## 功能实现
+
+### 1、添加通知
+
+在index.html中加入：
+
+```html
+<script src="renderer.js"></script>
+```
+
+并在根目录中创建renderer.js文件，向其中写入：
+
+```js
+const NOTIFICATION_TITLE = 'Title'
+const NOTIFICATION_BODY = '123'
+const CLICKED_MESSAGE = 'clicked'
+
+new Notification(NOTIFICATION_TITLE,{body:NOTIFICATION_BODY}).onclick(()=>{
+    console.log(CLICKED_MESSAGE)
+})
+```
+
+
+
+效果如图：
+
+![image-20210902132923076](https://ola.yumoxingchen.cn/%E5%9B%BE%E5%BA%8A/image-20210902132923076.png?hash=y0aqBl4W&download=1)
+
+### 2、任务栏图标进度条
+
+在createWindow中写入：
+
+```js
+    const addCount = 0.03
+    const delay = 100 //ms
+
+    let c = 0
+
+    prograssInterval = setInterval(()=>{
+        win.setProgressBar(c)
+
+        if(c<1) c+=addCount
+        else c=0
+    },delay)
+```
+
+在关闭前清除计时器：
+
+```js
+app.on("before-quit",()=>{
+    clearInterval(prograssInterval)
+})
+```
+
+### 3、任务栏图标右键菜单
+
+```js
+app.setUserTasks([{
+    program:process.execPath,
+    arguments: '--new-window',
+    iconPath: process.execPath,
+    iconIndex: 0,
+    title: 'New Window',
+    description: 'Create a new window'
+}])
+```
+
+取消时：
+
+```js
+app.serUserTasks([])
+```
+
+![image-20210902135337839](https://ola.yumoxingchen.cn/%E5%9B%BE%E5%BA%8A/image-20210902135337839.png?hash=y0aqBl4W&download=1)
 
